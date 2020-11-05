@@ -1,5 +1,5 @@
 from flask import Flask, Response
-from products.models import prod
+from products.views import prod
 
 app = Flask(__name__)
 app.register_blueprint(prod)
