@@ -76,18 +76,16 @@ def create_category():
 
 @products.route("/add-products", methods=['POST'])
 def create_product():
-    """
 
-    :return:
-    """
     RESPONSE_BODY["message"] = "Method not allowed"
     status_code = HTTPStatus.METHOD_NOT_ALLOWED
     if request.method == "POST":
         data = request.json
-        product = create_new_product(data["name"], data["price"], data["weight"], data["description"], data["category_id"])
+        product = create_new_product(data["name"], data["price"], data["description"], data["category_id"])
         RESPONSE_BODY["message"] = "OK. Product created!"
         RESPONSE_BODY["data"] = product
         status_code = HTTPStatus.CREATED
+
     return RESPONSE_BODY, status_code
 
 @products.route("/")

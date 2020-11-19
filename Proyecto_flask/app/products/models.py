@@ -11,7 +11,7 @@ class Product(db.Model):
     price = db.Column(db.Integer, nullable=False)
     weight = db.Column(db.Integer, default=1)
     description = db.Column(db.String(500), nullable=True)
-    refundable = db.Column(db.Boolean, nullable=False)
+    refundable = db.Column(db.Boolean, default=False)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     created_at = db.Column(db.DateTime, default=datetime.now())
     updated_at = db.Column(db.DateTime, default=datetime.now())
@@ -20,7 +20,7 @@ class Product(db.Model):
 class ProductSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Product
-        fields = ["id", "name", "price"]
+        fields = ["id", "name", "price","category_id"]
 
 
 class Category(db.Model):
@@ -59,21 +59,21 @@ def create_new_category(name):
 
     return None
 
-def create_new_product(name, price, weight, description, category_id):
+def create_new_product(name, price, description, category_id):
     """
     
     """
-    category = db.session.query.filter(id==category_id)
+    product = Product(name=name,price=price,description=description,category_id=category_id)
+    db.session.add(product)
 
-    if category != []:
-        return {"info":ok}
-    return {"No hay info":"Bad"}
+    if db.session.commit():
+        return product
+    return None
 
 def get_all_products():
     products_qs = Product.query.all()
     product_schema = ProductSchema()
-    products_serialization = [product_schema.dump(product) for product in
-                              products_qs]
+    products_serialization = [product_schema.dump(product) for product in products_qs]
 
     return products_serialization
 
