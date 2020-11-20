@@ -1,7 +1,7 @@
 import sys
 from http import HTTPStatus
 from flask import Blueprint, Response, request, render_template, redirect, url_for
-from app.products.forms import CreateCategoryForm
+from app.products.forms import CreateCategoryForm, CreateProductForm
 from app.products.models import (
     get_all_categories,
     create_new_category,
@@ -173,6 +173,29 @@ def create_category_form():
         return redirect(url_for('products.success'))
 
     return render_template('create_category_form.html', form=form_category)
+
+@products.route('/success_product')
+def success_product():
+    return render_template('product_success.html')
+
+@products.route('/create-product-form', methods=['GET', 'POST'])
+def create_product_form():
+    form_product = CreateProductForm()
+    if request.method == 'POST' and form_product.validate():
+        create_new_product(name=form_product.name.data, price=form_product.price.data, description=form_product.description.data, category_id=form_product.category_id.data)
+        return redirect(url_for('products.success_product'))
+
+    return render_template('create_product_form.html', form=form_product)
+
+@products.route('/add-category-old', methods=['GET', 'POST'])
+def create_category_old():
+    if request.method=='POST':
+        category = create_new_category(request.form["name"])
+        RESPONSE_BODY["message"] = "Se agrego la categoria {} con exito".format(request.form["name"])
+        RESPONSE_BODY["data"] = category
+        status_code = HTTPStatus.CREATED
+        return RESPONSE_BODY, status_code
+    return render_template("form_category_old.html")
 
 """ TAREA VISTAS
 name = Blueprint('name',__name__,url_prefix='/name')

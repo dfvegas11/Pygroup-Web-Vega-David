@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Product</title>
+</head>
+<body>
+<form method="POST" action="/products/create-product-form">
+    {{ form.csrf_token }}
+    {{ form.name.label }} {{ form.name(size=20) }}<br/>
+    {{ form.price.label }} {{ form.price(size=10) }}<br/>
+    {{ form.description.label }} {{ form.description(size=60) }}<br/>
+    {{ form.category_id.label }} {{ form.category_id(size=10) }}<br/> 
+    <input type="submit" value="Go">
+</form>
+</body>
+</html>
