@@ -6,7 +6,9 @@ from app.products.models import (
     create_new_category,
     get_all_products,
     get_product_by_id,
-    create_new_product
+    create_new_product,
+    create_new_Stock,
+    get_stock_by_product
 )
 
 products = Blueprint("products", __name__, url_prefix="/products")
@@ -103,7 +105,7 @@ def get_product(id):
     product = get_product_by_id(id)
 
     RESPONSE_BODY["data"] = product
-    return RESPONSE_BODY, 200
+    return RESPONSE_BODY, HTTPStatus.OK
 
 
 @products.route("/product-stock/<int:product_id>")
@@ -125,23 +127,27 @@ def get_products_that_need_restock():
 
 
 @products.route("/register-product-stock/<int:id>", methods=["PUT", "POST"])
-def register_product_refund_in_stock():
+def register_product_refund_in_stock(id):
 
     # TODO Complete this view to update stock for product when a register for
     # this products exists. If not create the new register in DB
 
     status_code = HTTPStatus.CREATED
     if request.method == "PUT":
-        RESPONSE_BODY["message"] = \
-            "Stock for this product were updated successfully!"
+        RESPONSE_BODY["message"] = "Stock for this product were updated successfully!"
         status_code = HTTPStatus.OK
+        return RESPONSE_BODY, status_code
     elif request.method == "POST":
-        RESPONSE_BODY["message"] = \
-            "Stock for this product were created successfully!"
-        pass
+        data = request.json
+        stock = create_new_Stock(id, data["quantity"])
+        RESPONSE_BODY["message"] = "Stock for this product were created successfully!"
+        RESPONSE_BODY["data"] = stock
+        status_code = HTTPStatus.CREATED
+        return RESPONSE_BODY, status_code
     else:
         RESPONSE_BODY["message"] = "Method not Allowed"
         status_code = HTTPStatus.METHOD_NOT_ALLOWED
+        return RESPONSE_BODY, status_code
 
 """ TAREA VISTAS
 name = Blueprint('name',__name__,url_prefix='/name')

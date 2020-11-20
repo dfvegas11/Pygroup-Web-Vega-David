@@ -8,6 +8,7 @@ from app.db import db, ma
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
+    image =db.Column(db.String(500), default="https://bit.ly/3loPYXP")
     price = db.Column(db.Integer, nullable=False)
     weight = db.Column(db.Integer, default=1)
     description = db.Column(db.String(500), nullable=True)
@@ -41,6 +42,11 @@ class Stock(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now())
     updated_at = db.Column(db.DateTime, default=datetime.now())
+
+class StockSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Stock
+        
 
 
 def get_all_categories():
@@ -83,3 +89,20 @@ def get_product_by_id(id):
     product_schema = ProductSchema()
     p = product_schema.dump(product_qs)
     return p
+
+def create_new_Stock(product_id, quantity):
+    """
+    
+    """
+    stock = Stock(product_id=product_id, quantity=quantity)
+    db.session.add(stock)
+
+    if db.session.commit():
+        return stock
+    return None
+
+def get_stock_by_product(product_id):
+    product_Stock = Stock.query.filter_by(product_id=product_id).first()
+    stock_schema = StockSchema()
+    s = stock_schema.dump(product_Stock)
+    return s
