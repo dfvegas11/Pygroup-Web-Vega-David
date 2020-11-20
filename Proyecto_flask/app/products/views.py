@@ -1,6 +1,7 @@
 import sys
 from http import HTTPStatus
-from flask import Blueprint, Response, request, render_template
+from flask import Blueprint, Response, request, render_template, redirect, url_for
+from app.products.forms import CreateCategoryForm
 from app.products.models import (
     get_all_categories,
     create_new_category,
@@ -8,7 +9,10 @@ from app.products.models import (
     get_product_by_id,
     create_new_product,
     create_new_Stock,
-    get_stock_by_product
+    get_stock_by_product,
+    check_stock,
+    get_stock,
+    update_stock
 )
 
 products = Blueprint("products", __name__, url_prefix="/products")
@@ -134,20 +138,41 @@ def register_product_refund_in_stock(id):
 
     status_code = HTTPStatus.CREATED
     if request.method == "PUT":
+        data = request.json
+        stock = update_stock(id, data["quantity"])
         RESPONSE_BODY["message"] = "Stock for this product were updated successfully!"
+        RESPONSE_BODY["data"] = stock
         status_code = HTTPStatus.OK
         return RESPONSE_BODY, status_code
     elif request.method == "POST":
-        data = request.json
-        stock = create_new_Stock(id, data["quantity"])
-        RESPONSE_BODY["message"] = "Stock for this product were created successfully!"
-        RESPONSE_BODY["data"] = stock
+        if check_stock(id)==True:
+            data = request.json
+            stock = create_new_Stock(id, data["quantity"])
+            RESPONSE_BODY["message"] = "Stock for this product were created successfully!"
+            RESPONSE_BODY["data"] = stock
+            status_code = HTTPStatus.CREATED
+            return RESPONSE_BODY, status_code
+        RESPONSE_BODY["message"] = "Stock for this product has been already created!"
         status_code = HTTPStatus.CREATED
+        print (get_stock(id))
         return RESPONSE_BODY, status_code
     else:
         RESPONSE_BODY["message"] = "Method not Allowed"
         status_code = HTTPStatus.METHOD_NOT_ALLOWED
         return RESPONSE_BODY, status_code
+
+@products.route('/success')
+def success():
+    return render_template('category_success.html')
+
+@products.route('/create-category-form', methods=['GET', 'POST'])
+def create_category_form():
+    form_category = CreateCategoryForm()
+    if request.method == 'POST' and form_category.validate():
+        create_new_category(name=form_category.name.data)
+        return redirect(url_for('products.success'))
+
+    return render_template('create_category_form.html', form=form_category)
 
 """ TAREA VISTAS
 name = Blueprint('name',__name__,url_prefix='/name')

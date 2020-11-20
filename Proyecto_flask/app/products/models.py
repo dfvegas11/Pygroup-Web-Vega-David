@@ -106,3 +106,20 @@ def get_stock_by_product(product_id):
     stock_schema = StockSchema()
     s = stock_schema.dump(product_Stock)
     return s
+
+def check_stock (product_id):
+    product_Stock = Stock.query.filter_by(product_id=product_id).first()
+    if product_Stock.quantity is None:
+        return True
+    return False
+
+def get_stock(product_id):
+    product_Stock = Stock.query.filter_by(product_id=product_id).first()
+    return product_Stock.quantity
+
+def update_stock(product_id,quantity):
+    product_Stock = Stock.query.filter_by(product_id=product_id).first()
+    suma = product_Stock.quantity+int(quantity)
+    product_Stock.quantity = suma
+    db.session.commit()
+    return suma

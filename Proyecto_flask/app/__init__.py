@@ -3,6 +3,7 @@ from app.db import db, ma
 from conf.config import DevelopmentConfig
 from app.products.views import products
 from flask_migrate import Migrate
+from flask_wtf import CSRFProtect
 
 ACTIVE_ENDPOINTS = [('/products', products)]
 
@@ -10,10 +11,12 @@ ACTIVE_ENDPOINTS = [('/products', products)]
 def create_app(config=DevelopmentConfig):
     app = Flask(__name__)
     migrate = Migrate(app, db)
+    csrf = CSRFProtect(app)
     app.config.from_object(config)
 
     db.init_app(app)
     ma.init_app(app)
+    csrf.init_app(app)
 
     with app.app_context():
         db.create_all()
