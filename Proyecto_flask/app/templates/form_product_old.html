@@ -1,0 +1,16 @@
+<html>
+    <title>Add a Product</title>
+    <h3>Add a Product</h3>
+    <form action="" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <label for="name">Name: </label>
+        <input type="text" id="name" name="name"/><br>
+        <label for="price">Price: </label>
+        <input type="number" id="price" name="price"/><br>
+        <label for="prime">Description: </label>
+        <input type="text" id="description" name="description"/><br>
+        <label for="category_id">category id: </label>
+        <input type="number" id="category_id" name="category_id"/><br>
+        <input type="submit" id="send-product" name="send-product" value="Send"/>
+    </form>
+</html>

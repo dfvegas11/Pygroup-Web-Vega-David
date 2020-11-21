@@ -197,6 +197,16 @@ def create_category_old():
         return RESPONSE_BODY, status_code
     return render_template("form_category_old.html")
 
+@products.route('/add-product-old', methods=['GET', 'POST'])
+def create_product_old():
+    if request.method=='POST':
+        product = create_new_product(request.form["name"],request.form["price"],request.form["description"],request.form["category_id"])
+        RESPONSE_BODY["message"] = "Se agrego el pructo {} con exito".format(request.form["name"])
+        RESPONSE_BODY["data"] = product
+        status_code = HTTPStatus.CREATED
+        return RESPONSE_BODY, status_code
+    return render_template("form_product_old.html")
+
 """ TAREA VISTAS
 name = Blueprint('name',__name__,url_prefix='/name')
 @name.route('/<name>', methods=['GET'])
