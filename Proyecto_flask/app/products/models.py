@@ -21,7 +21,7 @@ class Product(db.Model):
 class ProductSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Product
-        fields = ["id", "name", "price","category_id"]
+        fields = ["id", "name", "price","category_id", "description", "image"]
 
 
 class Category(db.Model):

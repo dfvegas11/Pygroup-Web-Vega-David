@@ -207,6 +207,16 @@ def create_product_old():
         return RESPONSE_BODY, status_code
     return render_template("form_product_old.html")
 
+@products.route('/show-catalog', methods=['GET'])
+def show_products_catalog():
+    products = get_all_products()
+    my_info = {"products": products, "pygroup": "Pygroup 2020"}
+    return render_template('catalog.html', my_info=my_info)
+
+@products.route('/temp')
+def temp():
+    return render_template('child1.html')
+
 """ TAREA VISTAS
 name = Blueprint('name',__name__,url_prefix='/name')
 @name.route('/<name>', methods=['GET'])
