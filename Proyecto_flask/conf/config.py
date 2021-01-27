@@ -3,6 +3,7 @@ class Config(object):
     TESTING = False
     SQLALCHEMY_DATABASE_URI = "sqlite:///shop.sqlite3"
     SQLALCHEMY_TRACK_MODIFICATION = False
+    WTF_CSRF_ENABLED = False
 
 class ProductConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'mysql://user@localhost/foo'

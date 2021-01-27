@@ -47,8 +47,6 @@ class StockSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Stock
         
-
-
 def get_all_categories():
     categories = Category.query.all()
     category_schema = CategorySchema()

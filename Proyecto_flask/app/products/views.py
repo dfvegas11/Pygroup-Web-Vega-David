@@ -22,32 +22,20 @@ PRODUCTS_TITLE = "<h1> Products </h1>"
 DUMMY_TEXT = "Dummy method to show how Response works"
 RESPONSE_BODY = {"message": "", "data": [], "errors": [], "metadata": []}
 
-
-@products.route("/dummy-product", methods=["GET", "POST"])
-def dummy_product():
-    """This method test the request types. If is GET Type it will
-    render the text Products in h1 label with code 500.
-    If is POST Type it will return Empty shelve! with status code 403
-    """
-    if request.method == "POST":
-        return EMPTY_SHELVE_TEXT, HTTPStatus.FORBIDDEN
-
-    return PRODUCTS_TITLE, HTTPStatus.INTERNAL_SERVER_ERROR
-
-
-@products.route("/dummy-product-2")
-def dummy_product_two():
-    """This method shows how Response object could be used to make API
-    methods.
-    """
-    return Response(DUMMY_TEXT, status=HTTPStatus.OK)
-
-
 @products.route("/categories")
 def get_categories():
     """
-        Verificar que si get_all_categories es [] 400, message = "No hay nada"
-    :return:
+        List all categories
+        ---
+        tags:
+            - products
+        description: Allows to see all the categories in the BD
+        responses:
+            400:
+                description: No categori foun
+            200:
+                description: Ok
+
     """
     categories = get_all_categories()
     status_code = HTTPStatus.OK
@@ -106,6 +94,23 @@ def get_products():
 
 @products.route("/product/<int:id>")
 def get_product(id):
+    """
+    Shows the info
+
+    ---
+
+    parameters:
+        - in: path
+            name: id
+            description: Product ID
+            type: integer
+    responses:
+        200:
+            description: OK
+        500:
+            description: Product not found
+
+    """
     product = get_product_by_id(id)
 
     RESPONSE_BODY["data"] = product
@@ -216,19 +221,4 @@ def show_products_catalog():
 @products.route('/temp')
 def temp():
     return render_template('child1.html')
-
-""" TAREA VISTAS
-name = Blueprint('name',__name__,url_prefix='/name')
-@name.route('/<name>', methods=['GET'])
-def index(name):
-    if name!="pygroup":
-        return Response ("Felicitaciones! Trabajo exitoso {}".format(name), status=200)
-    return Response ("ERROR! No se puede usar el nombre pygroup", status=400)
-"""
-"""Flask te permite usar plantillas para el contenido dinámico de páginas web.
-Una de las cosas más sencillas que se pueden hacer en Flask es crear una página web ante una petición. 
-Es decir, usar un template en Flask que sea una página HTML a la cual 
-podemos insertar contenido recuperado desde nuestro programa Python.
-A este método debemos pasarle el nombre de nuestra plantilla y las variables
-necesarias para su renderizado como parámetros clave-valor."""
 
