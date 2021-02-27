@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+        integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <title>Add Payment Method</title>
+</head>
+
+<body>
+    <div class="hero-head">
+        <nav class="navbar" style="background-color: mediumslateblue;">
+            <div class="container">
+                <div id="navbarMenuHeroA" class="navbar-menu">
+                    <div class="navbar-end">
+                        <a href="{{ url_for('products.show_products_catalog') }}" class="navbar-item">
+                            Catalog
+                        </a>
+                        <a href="{{ url_for('payment.add_payment_form') }}" class="navbar-item">
+                            Add payment method
+                        </a>
+                        <a href="{{ url_for('auth.show_my_profile') }}" class="navbar-item">
+                            My profile
+                        </a>
+                        <a href="{{ url_for('auth.logout') }}" class="navbar-item">
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 my-4 mx-auto text-center">
+        <h1 class="display-4 mt-4">Add Payment Method</h1>
+    </div>
+    <form method="POST" action="/payment/add-payment-method" style="text-align: center;">
+        {{ form.csrf_token }}
+        {{ form.id.label }} {{ form.id(size=20) }}<br />
+        {{ form.bank.label }} {{ form.bank(size=60) }}<br />
+        <input type="submit" value="Confirm">
+    </form>
+</body>
+
+</html>

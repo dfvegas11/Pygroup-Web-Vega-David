@@ -1,39 +1,298 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
-    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+        integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     <title>Products Catalog</title>
 </head>
+
 <body>
-    <h1>Products Catalog (David)</h1>
-    <div class="container">
-            <div class="row">
-                {% for product in my_info.products %}
-                <div class="col-sm-3">
-                    <div class="row"><h4> {{product.name}} </h4></div>
-                    <div class="row"><img src="{{product.image}}" alt="Product Image" width="80" height="80"></div>
-                    <div class="row"><p style="font-size: 10px;"> Price: 
-                        <span {% if product.price < 30 %} style="color: red;" {% else %} style="color: greenyellow;" {% endif %}>${{product.price}}</span>  <br>
-                        Description: {{product.description}}</div></p>
-                    <button>Añadir al carrito</button>
-                </div>
-                {% endfor %}
+    <div class="" style="background-color: mediumslateblue;">
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top" style="background-color: mediumslateblue;">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item dropdown">
+                        <img src="https://image.flaticon.com/icons/png/512/116/116356.png"
+                            class="nav-link dropdown-toggle img-fluid" height="70px" width="70px" href="#"
+                            id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></img>
+                        <div id="carrito" class="dropdown-menu" aria-labelledby="navbarCollapse">
+                            <table id="lista-carrito" class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Imagen</th>
+                                        <th>Nombre</th>
+                                        <th>Precio</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+
+                            <a href="#" id="vaciar-carrito" class="btn btn-primary btn-block">Vaciar Carrito</a>
+                            <a href="#" id="procesar-pedido" class="btn btn-danger btn-block">Procesar
+                                Compra</a>
+                        </div>
+                    </li>
+                </ul>
             </div>
+            <a href="{{ url_for('products.show_products_catalog') }}" class="navbar-item">
+                Catalog
+            </a>
+            <a href="{{ url_for('payment.add_payment_form') }}" class="navbar-item">
+                Add payment method
+            </a>
+            <a href="{{ url_for('auth.show_my_profile') }}" class="navbar-item">
+                My profile
+            </a>
+            <a href="{{ url_for('auth.logout') }}" class="navbar-item">
+                Logout
+            </a>
+        </nav>
     </div>
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" 
-    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" 
-    crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" 
-    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" 
-    crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" 
-    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" 
-    crossorigin="anonymous"></script>
+    <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 my-4 mx-auto text-center">
+        <h1 class="display-4 mt-4">Lista de Productos</h1>
+        <p class="lead">Selecciona uno de nuestros productos y con su id añadelo al carrito</p>
+    </div>
+
+    <div class="container" id="lista-productos">
+        <div class="card-deck mb-3 text-center">
+            {% for product in my_info.products %}
+            <div class="col-sm-3">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header">
+                        <h4 class="my-0 font-weight-bold">{{product.name}}</h4>
+                    </div>
+                    <div class="card-body">
+                        <img src="{{product.image}}" class="card-img-top">
+                        <h1 class="card-title pricing-card-title precio">$<span class="">{{product.price}}</span></h1>
+
+                        <ul class="list-unstyled mt-3 mb-4">
+                            <li></li>
+                            <li></li>
+                            <li>{{product.description}}</li>
+                            <li>id: {{product.id}}</li>
+                        </ul>
+                        <a href="" class="btn btn-block btn-primary agregar-carrito" data-id="{{product.id}}">Comprar</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        class Carrito {
+            comprarProducto(e) {
+                e.preventDefault();
+                if (e.target.classList.contains('agregar-carrito')) {
+                    const producto = e.target.parentElement.parentElement;
+                    this.leerDatosProducto(producto);
+                }
+            }
+
+            leerDatosProducto(producto) {
+                const infoProducto = {
+                    imagen: producto.querySelector('img').src,
+                    titulo: producto.querySelector('h4').textContent,
+                    precio: producto.querySelector('.precio span').textContent,
+                    id: producto.querySelector('a').getAttribute('data-id'),
+                    cantidad: 1
+                }
+                let productosLS;
+                productosLS = this.obtenerProductosLocalStorage();
+                productosLS.forEach(function(productoLS){
+                    if (productoLS.id === infoProducto.id){
+                        productosLS = productoLS.id;
+                    }
+                });
+                if (productosLS === infoProducto.id){
+                    Swal.fire({
+                        type: 'info',
+                        title: 'Oops...',
+                        text: 'Producto ya agregado',
+                        timer: 1000,
+                        showConfirmButton: false
+                    })
+                }else{
+                    this.insertarCarrito(infoProducto);
+                }
+                
+            }
+
+            insertarCarrito(producto) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <img src="${producto.imagen}" width=100>
+                    </td>
+                    <td>${producto.titulo}</td>
+                    <td>${producto.precio}</td>
+                    <td>
+                        <a href="#" class="borrar-producto fas fa-times-circle" data-id="${producto.id}"></a>
+                    </td>`;
+                listaProductos.appendChild(row);
+                this.guardarProductosLocalStorage(producto)
+            }
+
+            eliminarProducto(e) {
+                e.preventDefault();
+                let producto, productoID;
+                if (e.target.classList.contains('borrar-producto')) {
+                    e.target.parentElement.parentElement.remove();
+                    producto = e.target.parentElement.parentElement;
+                    productoID = producto.querySelector('a').getAttribute('data-id');
+                }
+                this.eliminarProductoLocalStorage(productoID);
+                this.calcularTotal();
+            }
+
+            vaciarCarrito(e) {
+                e.preventDefault();
+                while (listaProductos.firstChild) {
+                    listaProductos.removeChild(listaProductos.firstChild);
+                }
+                this.vaciarLocalStorage();
+                return false;
+            }
+
+            //Almacenar en el LS
+            guardarProductosLocalStorage(producto) {
+                let productos;
+                //Toma valor de un arreglo con datos del LS
+                productos = this.obtenerProductosLocalStorage();
+                //Agregar el producto al carrito
+                productos.push(producto);
+                //Agregamos al LS
+                localStorage.setItem('productos', JSON.stringify(productos));
+            }
+
+            //Comprobar que hay elementos en el LS
+            obtenerProductosLocalStorage() {
+                let productoLS;
+
+                //Comprobar si hay algo en LS
+                if (localStorage.getItem('productos') === null) {
+                    productoLS = [];
+                }
+                else {
+                    productoLS = JSON.parse(localStorage.getItem('productos'));
+                }
+                return productoLS;
+            }
+
+            //Mostrar los productos guardados en el LS
+            leerLocalStorage() {
+                let productosLS;
+                productosLS = this.obtenerProductosLocalStorage();
+                productosLS.forEach(function (producto) {
+                    //Construir plantilla
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                <td>
+                    <img src="${producto.imagen}" width=100>
+                </td>
+                <td>${producto.titulo}</td>
+                <td>${producto.precio}</td>
+                <td>
+                    <a href="#" class="borrar-producto fas fa-times-circle" data-id="${producto.id}"></a>
+                </td>`;
+                    listaProductos.appendChild(row);
+                });
+            }
+
+            //Eliminar producto por ID del LS
+            eliminarProductoLocalStorage(productoID) {
+                let productosLS;
+                //Obtenemos el arreglo de productos
+                productosLS = this.obtenerProductosLocalStorage();
+                //Comparar el id del producto borrado con LS
+                productosLS.forEach(function (productoLS, index) {
+                    if (productoLS.id === productoID) {
+                        productosLS.splice(index, 1);
+                    }
+                });
+
+                //Añadimos el arreglo actual al LS
+                localStorage.setItem('productos', JSON.stringify(productosLS));
+            }
+
+            //Eliminar todos los datos del LS
+            vaciarLocalStorage() {
+                localStorage.clear();
+            }
+
+            //Procesar pedido
+            procesarPedido(e) {
+                e.preventDefault();
+
+                if (this.obtenerProductosLocalStorage().length === 0) {
+                    Swal.fire({
+                        type: 'info',
+                        title: 'Oops...',
+                        text: 'El carrito está vacio, agrega un producto',
+                        timer: 2000,
+                        showConfirmButton: false
+                    })
+                }
+                else {
+                    location.href = "{{ url_for('car.show_shopping_car') }}";
+                }
+            }
+        }
+
+
+        const carro = new Carrito();
+        const carrito = document.getElementById('carrito');
+        const productos = document.getElementById('lista-productos');
+        const listaProductos = document.querySelector('#lista-carrito tbody');
+        const vaciarCarritoBtn = document.getElementById('vaciar-carrito');
+        const procesarPedidoBtn = document.getElementById('procesar-pedido');
+
+        cargarEventos();
+
+        function cargarEventos() {
+
+            //Se ejecuta cuando se presionar agregar carrito
+            productos.addEventListener('click', (e) => { carro.comprarProducto(e) });
+
+            //Cuando se elimina productos del carrito
+            carrito.addEventListener('click', (e) => { carro.eliminarProducto(e) });
+
+            //Al vaciar carrito
+            vaciarCarritoBtn.addEventListener('click', (e) => { carro.vaciarCarrito(e) });
+
+            //Al cargar documento se muestra lo almacenado en LS
+            document.addEventListener('DOMContentLoaded', carro.leerLocalStorage());
+
+            //Enviar pedido a otra pagina
+            procesarPedidoBtn.addEventListener('click', (e)=>{carro.procesarPedido(e)});
+        }
+    </script>
+
+    <script type="text/javascript" scr="static/carrito.js"></script>
+    <script type="text/javascript" scr="{{ url_for('static', filename='carrito.js') }}"></script>
+    <script type="text/javascript" scr="{{ url_for('static', filename='pedido.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
 </body>
+
 </html>
