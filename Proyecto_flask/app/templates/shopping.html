@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+        integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <title>Shopping Car</title>
+
+</head>
+
+<body>
+    <div class="hero-head">
+        <nav class="navbar" style="background-color: mediumslateblue;">
+            <div class="container">
+                <div id="navbarMenuHeroA" class="navbar-menu">
+                    <div class="navbar-end">
+                        <a href="{{ url_for('products.show_products_catalog') }}" class="navbar-item">
+                            Catalog
+                        </a>
+                        <a href="{{ url_for('payment.add_payment_form') }}" class="navbar-item">
+                            Add payment method
+                        </a>
+                        <a href="{{ url_for('auth.show_my_profile') }}" class="navbar-item">
+                            My profile
+                        </a>
+                        <a href="{{ url_for('auth.logout') }}" class="navbar-item">
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <br>
+
+    <div class="container">
+        <div class="row mt-3">
+            <div class="col">
+                <h2 class="d-flex justify-content-center mb-3">Realizar Compra</h2>
+                <h2 class="d-flex justify-content-center mb-3">Cliente: {{my_info.name}}</h2>
+                <h2 class="d-flex justify-content-center mb-3">Email: {{my_info.email}}</h2>
+                <div id="carrito" class="form-group table-responsive">
+                    <table class="table" id="lista-compra">
+                        <thead>
+                            <tr>
+                                <th scope="col">Imagen</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Precio</th>
+                                <th scope="col">Cantidad</th>
+                                <th scope="col">Sub Total</th>
+                                <th scope="col">Eliminar</th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                        <tr>
+                            <th colspan="4" scope="col" class="text-right">SUB TOTAL :</th>
+                            <th scope="col">
+                                <p id="subtotal"></p>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th colspan="4" scope="col" class="text-right">IVA :</th>
+                            <th scope="col">
+                                <p id="iva"></p>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th colspan="4" scope="col" class="text-right">TOTAL :</th>
+                            <th scope="col">
+                                <input id="total" name="monto" class="font-weight-bold border-0" readonly
+                                    style="background-color: white;"></input>
+                            </th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class Carrito {
+
+            eliminarProducto(e) {
+                e.preventDefault();
+                let producto, productoID;
+                if (e.target.classList.contains('borrar-producto')) {
+                    e.target.parentElement.parentElement.remove();
+                    producto = e.target.parentElement.parentElement;
+                    productoID = producto.querySelector('a').getAttribute('data-id');
+                }
+                this.eliminarProductoLocalStorage(productoID);
+                this.calcularTotal();
+            }
+
+            //Comprobar que hay elementos en el LS
+            obtenerProductosLocalStorage() {
+                let productoLS;
+
+                //Comprobar si hay algo en LS
+                if (localStorage.getItem('productos') === null) {
+                    productoLS = [];
+                }
+                else {
+                    productoLS = JSON.parse(localStorage.getItem('productos'));
+                }
+                return productoLS;
+            }
+
+            //Mostrar los productos guardados en el LS en compra.html
+            leerLocalStorageCompra() {
+                let productosLS;
+                productosLS = this.obtenerProductosLocalStorage();
+                productosLS.forEach(function (producto) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                <td>
+                    <img src="${producto.imagen}" width=100>
+                </td>
+                <td>${producto.titulo}</td>
+                <td>${producto.precio}</td>
+                <td>
+                    <input type="number" class="form-control cantidad" min="1" value=${producto.cantidad}>
+                </td>
+                <td id='subtotales'>${producto.precio * producto.cantidad}</td>
+                <td>
+                    <a href="#" class="borrar-producto fas fa-times-circle" style="font-size:30px" data-id="${producto.id}"></a>
+                </td>`;
+                    listaCompra.appendChild(row);
+                });
+            }
+
+            //Eliminar producto por ID del LS
+            eliminarProductoLocalStorage(productoID) {
+                let productosLS;
+                //Obtenemos el arreglo de productos
+                productosLS = this.obtenerProductosLocalStorage();
+                //Comparar el id del producto borrado con LS
+                productosLS.forEach(function (productoLS, index) {
+                    if (productoLS.id === productoID) {
+                        productosLS.splice(index, 1);
+                    }
+                });
+
+                //Añadimos el arreglo actual al LS
+                localStorage.setItem('productos', JSON.stringify(productosLS));
+            }
+
+            //Calcular montos
+            calcularTotal() {
+                let productosLS;
+                let total = 0, iva = 0, subtotal = 0;
+                productosLS = this.obtenerProductosLocalStorage();
+                for (let i = 0; i < productosLS.length; i++) {
+                    let element = Number(productosLS[i].precio * productosLS[i].cantidad);
+                    total = total + element;
+                }
+
+                iva = parseFloat(total * 0.18).toFixed(2);
+                subtotal = parseFloat(total - iva).toFixed(2);
+
+                document.getElementById('subtotal').innerHTML = "S/. " + subtotal;
+                document.getElementById('iva').innerHTML = "S/. " + iva;
+                document.getElementById('total').value = "S/. " + total.toFixed(2);
+            }
+
+            obtenerEvento(e) {
+                e.preventDefault();
+                let id, cantidad, producto, productosLS;
+                if (e.target.classList.contains('cantidad')) {
+                    producto = e.target.parentElement.parentElement;
+                    id = producto.querySelector('a').getAttribute('data-id');
+                    cantidad = producto.querySelector('input').value;
+                    let actualizarMontos = document.querySelectorAll('#subtotales');
+                    productosLS = this.obtenerProductosLocalStorage();
+                    productosLS.forEach(function (productoLS, index) {
+                        if (productoLS.id === id) {
+                            productoLS.cantidad = cantidad;
+                            actualizarMontos[index].innerHTML = Number(cantidad * productosLS[index].precio);
+                        }
+                    });
+                    localStorage.setItem('productos', JSON.stringify(productosLS));
+
+                }
+                else {
+                    console.log("click afuera");
+                }
+            }
+        }
+
+        const compra = new Carrito();
+        const listaCompra = document.querySelector("#lista-compra tbody");
+        const carrito = document.getElementById('carrito');
+
+
+        cargarEventos();
+
+        function cargarEventos() {
+            document.addEventListener('DOMContentLoaded', compra.leerLocalStorageCompra());
+
+            //Eliminar productos del carrito
+            carrito.addEventListener('click', (e) => { compra.eliminarProducto(e) });
+
+            compra.calcularTotal();
+
+            carrito.addEventListener('change', (e) => { compra.obtenerEvento(e) });
+            carrito.addEventListener('keyup', (e) => { compra.obtenerEvento(e) });
+        }
+
+    </script>
+
+    <script scr="{{ url_for('static', filename='carrito.js') }}"></script>
+    <script scr="{{ url_for('static', filename='compra.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

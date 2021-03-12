@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+        integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <title>My Profile</title>
+</head>
+
+<body>
+    <div class="hero-head">
+        <nav class="navbar" style="background-color: mediumslateblue;">
+            <div class="container">
+                <div id="navbarMenuHeroA" class="navbar-menu">
+                    <div class="navbar-end">
+                        <a href="{{ url_for('products.show_products_catalog') }}" class="navbar-item">
+                            Catalog
+                        </a>
+                        <a href="{{ url_for('payment.add_payment_form') }}" class="navbar-item">
+                            Add payment method
+                        </a>
+                        <a href="{{ url_for('auth.show_my_profile') }}" class="navbar-item">
+                            My profile
+                        </a>
+                        <a href="{{ url_for('auth.logout') }}" class="navbar-item">
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 my-4 mx-auto text-center">
+        <h1 class="display-4 mt-4">{{my_info.name}}</h1>
+        <p class="lead">{{my_info.email}}</p>
+    </div>
+    <p></p>
+    <p></p>
+    <p class="lead" style="text-align: center;">MY PAYMENTS METHODS</p>
+    <div class="card-deck mb-3 text-center">
+        <div class="container">
+            <div class="row">
+                {% for payment in my_info.payments %}
+                {% if payment.user_id == my_info.id %}
+                <div class="col-sm-3">
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header">
+                            <h4 class="my-0 font-weight-bold">{{payment.bank}}</h4>
+                        </div>
+                        <div class="card-body">
+                            <p></p>
+                            <h1 class="card-title pricing-card-title precio" style="font-size: 30px; font-weight: 300;">{{payment.id}}<span class=""></span></h1>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

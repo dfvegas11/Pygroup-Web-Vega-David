@@ -57,7 +57,6 @@ def get_all_categories():
 def create_new_category(name):
     category = Category(name=name)
     db.session.add(category)
-
     if db.session.commit():
         return category
 
